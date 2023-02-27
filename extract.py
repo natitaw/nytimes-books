@@ -1,9 +1,11 @@
 import requests 
+import time
 import json
 import os
+import datetime
 
 # Get the API key from an environment variable
-API_KEY = "bdnTOY3Wx7hYKcG7xjRo5ALgdcEYGiLv" #os.environ.get('NYT_BOOKS_API_KEY')
+API_KEY = "bdnTOY3Wx7hYKcG7xjRo5ALgdcEYGiLv" #os.environ.get('API_KEY')
 
 
 def retrieve_newest_monthly_lists():
@@ -31,7 +33,7 @@ def retrieve_newest_monthly_lists():
     data = [data for data in data["results"] if data["updated"]=="MONTHLY"]
     
     # Sort for finding the newest 4 lists
-    data = sorted(data, key=lambda data: data['oldest_published_date'])[:5]
+    data = sorted(data, key=lambda data: data['newest_published_date'], reverse=True)[:5]
 
     # Create a new list with only "list_name_encoded" and "oldest_publish_date" keys
     output_data = [{key:value for key,value in d.items() 
@@ -46,7 +48,7 @@ def retrieve_newest_monthly_lists():
     return output_data
 
 
-def retrieve_books(path_to_file, end_date=None):
+def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y-%m-%d')):
     """
     Retrieve the books for each monthly list specified in a JSON file.
 
@@ -71,31 +73,36 @@ def retrieve_books(path_to_file, end_date=None):
         responses = []
 
         # Initialize the API endpoint URL and parameters
-        url = f'https://api.nytimes.com/svc/books/v3/lists/{list_name_encoded}.json'
+        url = f'https://api.nytimes.com/svc/books/v3/lists/{oldest_published_date}/{list_name_encoded}.json'
         params = {
-            'api-key': f'{API_KEY}',
-            'published_date': oldest_published_date
+            'api-key': f'{API_KEY}'
         }
 
         # Loop until there is no more data available or we reach the end date
         while True:
             # Send a GET request to the API endpoint with the current parameters
+            url = f'https://api.nytimes.com/svc/books/v3/lists/{oldest_published_date}/{list_name_encoded}.json'
             response = requests.get(url, params=params)
 
             # Check if the response was successful
             if response.status_code == 200:
                 # Parse the response data as JSON
-                data = json.loads(response.text)
+                data = response.json()
 
                 # Append the response data to the list of responses
                 responses.append(data)
 
+                print(data["results"]['next_published_date'])
                 # Check if there is more data available
-                if 'next_published_date' in data and (not end_date or data['next_published_date'] <= end_date):
+                if data["results"]['next_published_date'] <= end_date:
                     # Update the parameters with the next_published_date
-                    params['published_date'] = data['next_published_date']
+                    oldest_published_date = data["results"]['next_published_date']
                 else:
                     break
+                # Check if there is a timeout error
+            elif response.status_code == 429:
+                time.sleep(10)
+        
             else:
                 print(f'Error: {response.status_code} - {response.reason}')
                 break
