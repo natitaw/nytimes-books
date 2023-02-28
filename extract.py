@@ -122,7 +122,7 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
                         continue
                     
                 # Check if there is more data available
-                if data["results"]['next_published_date'] <= end_date:
+                if (data["results"]['next_published_date'] <= end_date) and (data["results"]['next_published_date'] != ''):
                     # Update the parameters with the next_published_date
                     oldest_published_date = data["results"]['next_published_date']
                 else:
