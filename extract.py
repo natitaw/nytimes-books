@@ -118,7 +118,7 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
                     if next_page.status_code == 429:
                         # NYTIMES API has 10 requests per minute limit
                         print('\t\t waiting ...')
-                        time.sleep(10)
+                        time.sleep(30)
                         continue
                     
                 # Check if there is more data available
@@ -132,17 +132,16 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
             elif response.status_code == 429:
                 # NYTIMES API has 10 requests per minute limit
                 print('\t\t waiting ...')
-                time.sleep(10)
+                time.sleep(30)
 
             else:
                 print(f'Error: {response.status_code} - {response.reason}')
                 break
 
-        # Write the list of responses to a NDJSON file
+        # Write the list of responses to a single NDJSON file
         output_filename = f'{list_name_encoded}.ndjson'
         with open(output_filename, 'w') as f:
-            for response in responses:
-                f.write(json.dumps(response) + '\n')
+            f.write(json.dumps(response) + '\n')
 
         # Print the path to the output file
         print(f'Output data saved to {os.path.abspath(output_filename)}')
