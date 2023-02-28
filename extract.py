@@ -66,20 +66,24 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
 
     # Loop through each monthly list and retrieve the books for each month
     for lst in data:
+        
         list_name_encoded = lst['list_name_encoded']
         oldest_published_date = lst['oldest_published_date']
 
+        print(f"\t{list_name_encoded}")
         # Create a list to hold the API responses for each month
         responses = []
 
         # Initialize the API endpoint URL and parameters
         url = f'https://api.nytimes.com/svc/books/v3/lists/{oldest_published_date}/{list_name_encoded}.json'
         params = {
-            'api-key': f'{API_KEY}'
+            'api-key': f'{API_KEY}',
+            'offset':0
         }
 
         # Loop until there is no more data available or we reach the end date
         while True:
+            print(list_name_encoded, oldest_published_date)
             # Send a GET request to the API endpoint with the current parameters
             url = f'https://api.nytimes.com/svc/books/v3/lists/{oldest_published_date}/{list_name_encoded}.json'
             response = requests.get(url, params=params)
@@ -88,21 +92,48 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
             if response.status_code == 200:
                 # Parse the response data as JSON
                 data = response.json()
-
+                
                 # Append the response data to the list of responses
                 responses.append(data)
+                
+                num_results = data['num_results']
+                page_num = 1
 
-                print(data["results"]['next_published_date'])
+                
+                # Go through all books
+                while num_results >= 20:
+                    print("Next page")
+                    # Use offset to get the next batch of results
+                    params['offset'] = page_num*20
+                    next_page = requests.get(url, params=params)
+                    
+                    if next_page.status_code == 200:
+                        next_page = response.json()
+                        next_page = response.get("results", [])
+                        data['results'].extend(next_page)
+                    
+                        # Iterate to the next page
+                        page_num += 1
+                    
+                    if next_page.status_code == 429:
+                        # NYTIMES API has 10 requests per minute limit
+                        print('\t\t waiting ...')
+                        time.sleep(10)
+                        continue
+                    
                 # Check if there is more data available
                 if data["results"]['next_published_date'] <= end_date:
                     # Update the parameters with the next_published_date
                     oldest_published_date = data["results"]['next_published_date']
                 else:
                     break
-                # Check if there is a timeout error
+            
+            # Check if there is a timeout error
             elif response.status_code == 429:
+                # NYTIMES API has 10 requests per minute limit
+                print('\t\t waiting ...')
                 time.sleep(10)
-        
+
             else:
                 print(f'Error: {response.status_code} - {response.reason}')
                 break
