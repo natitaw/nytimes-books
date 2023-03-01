@@ -148,6 +148,8 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
 
 
 if __name__ == "__main__":
+    
+    #TODO: Write better code here
 
     # Execute names script
     retrieve_newest_monthly_lists()
