@@ -149,10 +149,15 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
 
 if __name__ == "__main__":
     
-    #TODO: Write better code here
-
-    # Execute names script
+    
+    # Call the function retrieve_newest_monthly_lists() to retrieve the latest monthly lists of book names
+    # and store them in a JSON file locally.
     retrieve_newest_monthly_lists()
 
-    # Execute second part
-    retrieve_books("newest_monthly_lists.json")
+    # Call the function retrieve_books() to retrieve details of all the books listed in the JSON file
+    # generated in the previous step, and store them locally.
+    # The function takes a single argument - the path to the JSON file - which is set to the value
+    # "newest_monthly_lists.json" here, indicating that we want to retrieve details for the latest
+    # monthly lists. Although not shown here, the function also takes an optional argument "end_date"
+    # which is set to today's date (dynamic)
+    retrieve_books(path_to_file="newest_monthly_lists.json")
