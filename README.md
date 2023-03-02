@@ -18,6 +18,35 @@
  This project can be useful for anyone who wants to work with the NYTimes Books API to retrieve data on books and book-related content from The New York Times. The code and documentation on the GitHub page can serve as a helpful starting point for anyone looking to build similar projects or integrate the NYTimes Books API into their own applications.
 
 
+<!-- GETTING STARTED -->
+## Getting Started
+
+- Info on getting started
+
+
+### Prerequisites amd Installation
+
+_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+
+1. Get a free API Key at [https://example.com](https://example.com)
+2. Clone the repo
+   ```sh
+   git clone https://github.com/natitaw/nytimes-books.git
+   ```
+3. Install pip packages
+   ```sh
+   pip install -r requirements.txt
+   ```
+4. Enter your API in `config.pi`
+   ```js
+   API_KEY = 'ENTER YOUR API';
+   ```
+
+---
+
+
+
+
  ## Part 1: Extract
 
  ## Part 2: Load
