@@ -53,7 +53,7 @@ Things to consider
 -  [Semi-structured Data Size Limitations](https://docs.snowflake.com/en/user-guide/data-load-considerations-prepare#semi-structured-data-size-limitations "Permalink to this headline"). What to consider when uploading NDJSON files?
 
 
-Firstly, I created a database called `NATURAL_CYCLES`. Then I created a table called `RAW_BOOKS` using the following command:
+Firstly, I created a database called `NATURAL_CYCLES` using the UI of Snowflake. Then I created a table called `RAW_BOOKS` using the following command:
 
 ```SQL
 USE DATABASE NATURAL_CYCLES;
@@ -62,10 +62,69 @@ CREATE TABLE RAW_BOOKS (
     SRC_JSON VARIANT
     );
 ```
+Here are things I considered while uploading the 5 (NDJSON) files
+- Number of load operations that run in parallel should not exceed the number of datafiles to be loaded (5 in this case)
+- Snowflake documentaiton recommends to produce data files roughly 100 - 200 MB. In this case, all the files are roughly under 2 MB so this recommendation does not apply.
+    - Snowflake also imposes a limit of 16 MB per row for indiviadual rows when the data type is `VARIANT`. This is not relevant for our files
+- Snowflake recommends to enable `STRIP_OUTER_ARRAY` file format option for the command `COPY INTO table` to remove the outer array structure and load the records into separate table rows
+
 
 Then the next step is to upload the files into the table. This consists of two steps:
 1. Upload (i.e. stage) the files to a Snowflake named stage using the `PUT` command
 2. Load the contents of the staged files into the Snowflake database `NATURAL_CYCLES` using the command `COPY INTO`
+
+
+### Commands
+
+```
+-- Select the right database
+USE NATURAL_CYCLES;
+
+-- Select the right schema
+USE SCHEMA PUBLIC; 
+
+-- Create an Internal Named Stage
+CREATE OR REPLACE STAGE my_named_stage;
+
+-- Create a file format
+CREATE OR REPLACE FILE FORMAT my_ndjson_format
+TYPE = json
+strip_outer_array = FALSE
+;
+
+-- Stage all .ndjson files
+PUT
+file:///Users/natitaw/Documents/GitHub/nytimes-books/data/*.ndjson @my_named_stag
+e
+PARALLEL = 5
+AUTO_COMPRESS = FALSE;
+```
+
+We can now confirm that the files are staged using the following: `LIST @my_named_stage;` which returns the following 
+``` bash
++-----------------------------------------------+---------+----------------------------------+------------------------------+
+| name                                          |    size | md5                              | last_modified                |
+|-----------------------------------------------+---------+----------------------------------+------------------------------|
+| my_named_stage/audio-fiction.ndjson           | 2318272 | 19e166835be2e2d0c5e009d1aee4d9d0 | Fri, 3 Mar 2023 19:05:04 GMT |
+| my_named_stage/audio-nonfiction.ndjson        | 2322464 | 82a90e280992b295ca08bde7c8686b3a | Fri, 3 Mar 2023 19:05:05 GMT |
+| my_named_stage/business-books.ndjson          |  529104 | 9535d8b4bafcce7517e86e4e20ca8334 | Fri, 3 Mar 2023 19:04:58 GMT |
+| my_named_stage/graphic-books-and-manga.ndjson | 1480256 | f97827f357554a682de20d60310689f0 | Fri, 3 Mar 2023 19:05:02 GMT |
+| my_named_stage/mass-market-monthly.ndjson     | 1529152 | af8f3b9103635d5a52c02b19fe2fcdd2 | Fri, 3 Mar 2023 19:05:05 GMT |
++-----------------------------------------------+---------+----------------------------------+------------------------------+
+
+```
+
+Continuing
+
+```SQL
+COPY INTO RAW_BOOKS
+FROM @~/my_named_stage
+FILE_FORMAT = my_ndjson_format
+PATTERN = '.*[.]ndjson'
+PURGE = TRUE;
+```
+
+
 
 ## Part 3: Transform
 
