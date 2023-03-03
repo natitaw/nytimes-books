@@ -20,13 +20,7 @@
  This project can be useful for anyone who wants to work with the NYTimes Books API to retrieve data on books and book-related content from The New York Times. The code and documentation on the GitHub page can serve as a helpful starting point for anyone looking to build similar projects or integrate the NYTimes Books API into their own applications.
 
 
-<!-- GETTING STARTED -->
 ## Getting Started
-
-- Info on getting started
-
-
-### Prerequisites and Installation
 
 Here is how you can install and run the file
 
@@ -41,9 +35,9 @@ Here is how you can install and run the file
    ```
 4. Enter your API in `config.py`
    ```js
-   API_KEY = 'ENTER YOUR API'
+   API_KEY = 'ENTER_YOUR_API'
    ```
-
+-	*Note: since this is a private repo, I have already done step (4) so you can skip it*
 ---
 
 
