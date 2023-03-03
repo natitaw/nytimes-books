@@ -5,7 +5,7 @@ import os
 import datetime
 
 # Get the API key from an environment variable
-API_KEY = "bdnTOY3Wx7hYKcG7xjRo5ALgdcEYGiLv" #os.environ.get('API_KEY')
+from config import API_KEY
 
 
 def retrieve_newest_monthly_lists():
