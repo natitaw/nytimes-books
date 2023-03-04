@@ -145,3 +145,77 @@ FROM book_table
 limit 10
 
 ```
+
+### Creating a VIEW named `V_LISTS`
+
+- Appropriate data types
+```SQL
+CREATE OR REPLACE VIEW V_LISTS (LIST_NAME, LIST_NAME_ENCODED, BESTSELLERS_DATE, BOOKS) AS (
+WITH book_table AS (
+SELECT PARSE_JSON(PARSE_JSON(SRC_JSON):results) AS src FROM RAW_BOOKS)
+
+SELECT 
+src:list_name::STRING,
+src:list_name_encoded::STRING,
+src:bestsellers_date::DATE,
+src:books::VARIANT
+
+FROM book_table 
+)
+```
+
+Creating V_LIST_BOOKS
+```SQL
+CREATE OR REPLACE VIEW V_LISTS_BOOKS (BOOK_TITLE, BOOK_RANK, BOOK_PUBLISHER, LIST_NAME, BESTSELLERS_DATE) AS (
+SELECT 
+ 	F.value:title::STRING AS BOOK_TITLE,
+    F.value:rank::INT AS BOOK_RANK,
+    F.value:publisher::STRING AS BOOK_PUBLISHER,
+    LIST_NAME::STRING,
+	BESTSELLERS_DATE::DATE
+ FROM V_LISTS ,
+ Table(Flatten(V_LISTS.books)) F
+)
+
+```
+
+
+## SQL Questions
+
+Question 1: Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
+
+```SQL
+-- Write a query to find how many unique books and how many total 
+-- appearences each publisher appears on the dataset
+-- ordered by total appearences
+SELECT
+	BOOK_PUBLISHER, 
+    COUNT(DISTINCT (BOOK_TITLE)) AS UNIQUE_BOOKS,
+    COUNT(BOOK_PUBLISHER) AS TOTAL_APPERANCES
+FROM V_LISTS_BOOKS 
+GROUP BY BOOK_PUBLISHER
+ORDER BY TOTAL_APPERANCES DESC
+```
+
+Question 2.1: Write a query that counts how many points each publisher has in our dataset, where points are defined as such: position 1 = 15 points, position 2 = 14 points, position 3 = 13 points, etc. 
+```SQL
+SELECT BOOK_PUBLISHER, SUM(
+	-- Note: ARRAY_CONSTRUCT starts from 16 since the first element has a value of 0
+    COALESCE(ARRAY_CONSTRUCT(16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)[BOOK_RANK], 0)
+) AS POINTS 
+FROM V_LISTS_BOOKS 
+GROUP BY BOOK_PUBLISHER 
+ORDER BY POINTS DESC;
+
+```
+
+Quesiton 2.2: Do the same for books
+```SQL
+SELECT BOOK_TITLE, SUM(
+    -- Note: ARRAY_CONSTRUCT starts from 16 since the first element has a value of 0
+    COALESCE(ARRAY_CONSTRUCT(16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)[BOOK_RANK], 0))
+ AS POINTS 
+FROM V_LISTS_BOOKS 
+GROUP BY BOOK_TITLE 
+ORDER BY POINTS DESC;
+```
