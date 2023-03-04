@@ -1,6 +1,7 @@
 import requests 
 import time
 import json
+import ndjson
 import os
 import datetime
 
@@ -141,7 +142,7 @@ def retrieve_books(path_to_file, end_date=datetime.datetime.today().strftime('%Y
         # Write the list of responses to a single NDJSON file
         output_filename = f'{list_name_encoded}.ndjson'
         with open(output_filename, 'w') as f:
-            f.write(json.dumps(responses) + '\n')
+            f.write(ndjson.dumps(responses) + '\n')
 
         # Print the path to the output file
         print(f'Output data saved to {os.path.abspath(output_filename)}')
