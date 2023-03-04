@@ -129,3 +129,19 @@ PURGE = TRUE;
 ## Part 3: Transform
 
 
+```SQL
+WITH book_table AS (
+SELECT PARSE_JSON(PARSE_JSON(SRC_JSON):results) AS src FROM RAW_BOOKS)
+
+-- # list_name (string), list_name_encoded (string), bestsellers_date (date), books (variant).
+
+SELECT 
+src:list_name AS LIST_NAME,
+src:list_name_encoded AS LIST_NAME_ENCODED,
+src:bestsellers_date AS BESTSELLERS_DATE,
+src:books AS BOOKS 
+
+FROM book_table 
+limit 10
+
+```
