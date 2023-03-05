@@ -45,7 +45,7 @@ Here is how you can install and run the file
 **- This task is automated using GitHub Actions. The YAML file can be found in the 'Actions' tab or by clicking [here](https://github.com/natitaw/nytimes-books/blob/main/.github/workflows/nightly-update.yml)**
 - Note: The workflow is currently manually disabled (to save my credits)
 
-- I have uploaded the NDJSON files in the [data]() folder so that you can take a look
+- I have uploaded the NDJSON files in the [data](https://github.com/natitaw/nytimes-books/tree/main/data) folder so that you can take a look
 
 ---
 
