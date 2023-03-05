@@ -182,7 +182,9 @@ SELECT
 
 ## SQL Questions
 
-Question 1: Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
+### Question 1:
+
+Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
 
 ```SQL
 -- Write a query to find how many unique books and how many total 
@@ -197,7 +199,9 @@ GROUP BY BOOK_PUBLISHER
 ORDER BY TOTAL_APPERANCES DESC
 ```
 
-Question 2.1: Write a query that counts how many points each publisher has in our dataset, where points are defined as such: position 1 = 15 points, position 2 = 14 points, position 3 = 13 points, etc. 
+### Question 2:
+
+2.1: Write a query that counts how many points each publisher has in our dataset, where points are defined as such: position 1 = 15 points, position 2 = 14 points, position 3 = 13 points, etc. 
 ```SQL
 SELECT BOOK_PUBLISHER, SUM(
 	-- Note: ARRAY_CONSTRUCT starts from 16 since the first element has a value of 0
@@ -209,7 +213,7 @@ ORDER BY POINTS DESC;
 
 ```
 
-Quesiton 2.2: Do the same for books
+2.2: Do the same for books
 ```SQL
 SELECT BOOK_TITLE, SUM(
     -- Note: ARRAY_CONSTRUCT starts from 16 since the first element has a value of 0
@@ -219,3 +223,80 @@ FROM V_LISTS_BOOKS
 GROUP BY BOOK_TITLE 
 ORDER BY POINTS DESC;
 ```
+
+> Note: I chose to use `ARRAY_CONSTRUCT()` for question 2.1 and 2.2 despite it being slightly more complicated  because it is easier to maintain.
+
+### Question 3:
+Find which books had the longest uprising trends and how long (in months) they were, where an uprising trend is defined as when a book has a greater or equal position in month X than in month X - 1
+
+```SQL
+WITH trend_table AS (
+	-- 1. Create a table where the best seller dates are ordered cronologically	
+    SELECT 
+        BOOK_TITLE, 
+        BOOK_RANK, 
+        BESTSELLERS_DATE, 
+        ROW_NUMBER() OVER (PARTITION BY BOOK_TITLE	ORDER BY BESTSELLERS_DATE) row_num
+    FROM 
+        V_LISTS_BOOKS),
+	data_table AS (
+    -- 2. Create a table to filter books where the best seller dates appeare within one month after the previous one
+    SELECT 
+    	t1.BOOK_TITLE, 
+        t1.BESTSELLERS_DATE, 
+        t1.BOOK_RANK, 
+        t2.BOOK_RANK PREVIOUS_RANK,
+        DATEDIFF(month, LAG(t1.BESTSELLERS_DATE, 1) 
+        	OVER (PARTITION BY t1.BOOK_TITLE ORDER BY t1.BESTSELLERS_DATE), t1.BESTSELLERS_DATE) as month_diff    
+        FROM trend_table t1
+        	LEFT JOIN trend_table t2 
+            	ON (t1.row_num - 1 = t2.row_num)
+                AND (t1.BOOK_TITLE = t2.BOOK_TITLE)
+    ),
+    final_table AS(
+    -- 2. Create a table that filters books appearing within one month after each other 
+    	-- and with rank getting better or staying the same
+        SELECT
+        	BOOK_TITLE, 
+            BESTSELLERS_DATE,
+            CASE
+            	WHEN trend_length IS NULL THEN 1
+                ELSE trend_length END
+            AS trend_length
+        FROM (SELECT 
+        	*,
+            DATEDIFF(month, LAG(BESTSELLERS_DATE, 1) 
+            	OVER (PARTITION BY BOOK_TITLE ORDER BY BESTSELLERS_DATE), 
+                		BESTSELLERS_DATE) as trend_length 
+        FROM data_table
+        WHERE month_diff <= 1 
+        AND BOOK_RANK <= PREVIOUS_RANK)
+    )
+
+-- 3. Count consequetive 1's to determine the longest trends
+SELECT 	
+    BOOK_TITLE,
+    TREND_LENGTH,
+    MIN(BESTSELLERS_DATE) as TREND_START,
+    COUNT(TREND_LENGTH) as TREND
+FROM final_table 
+WHERE TREND_LENGTH = 1
+GROUP BY 1,2
+ORDER by 4 DESC
+
+```
+
+The books with the longest uprising trends (and how long) were:
+1. Thinking Fast and Slow (7 Months)
+2. Outliers (7 Months)
+3. The Power of Habit (6 Months) 
+
+## Snowflake Dashboards
+
+### Histogram of Total Apperances of Book Publishers
+
+![Histogram of Total Apperances of Book Publishers](hist_plot.png?raw=true)
+
+
+
+End of file
