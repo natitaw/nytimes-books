@@ -13,8 +13,6 @@
 
  This GitHub page provides a project that involves working with the NYTimes Books API to retrieve data on book lists and books. The project includes two main tasks:
  1.  Using the API endpoint /lists/names.json to find the 5 newest monthly lists and output list_name_encoded and oldest_published_date for all 5 lists in a single JSON file.  
-	**1.1 This task is automated using GitHub Actions. The YAML file can be found in the 'Actions' tab or by clicking [here](https://github.com/natitaw/nytimes-books/blob/main/.github/workflows/nightly-update.yml)**
-		- Note: The workflow is currently manually disabled 
  2.  Writing a script that accepts the path to the JSON file from the first task, as well as an optional end date, and retrieves the books in each list for the specified date range. The output is a single NDJson file per list containing the entire API response for all months in that list.
     
  This project can be useful for anyone who wants to work with the NYTimes Books API to retrieve data on books and book-related content from The New York Times. The code and documentation on the GitHub page can serve as a helpful starting point for anyone looking to build similar projects or integrate the NYTimes Books API into their own applications.
@@ -43,6 +41,10 @@ Here is how you can install and run the file
     ```bash
     python3 extract.py
     ```
+
+**- This task is automated using GitHub Actions. The YAML file can be found in the 'Actions' tab or by clicking [here](https://github.com/natitaw/nytimes-books/blob/main/.github/workflows/nightly-update.yml)**
+- Note: The workflow is currently manually disabled (to save my credits)
+
 ---
 
  ## Part 2: Load
