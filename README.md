@@ -34,10 +34,14 @@ Here is how you can install and run the file
    pip install -r requirements.txt
    ```
 4. Enter your API in `config.py`
-   ```js
+   ```python
    API_KEY = 'ENTER_YOUR_API'
    ```
 -	*Note: since this is a private repo, I have already done step (4) so you can skip it*
+5. Execute `extract.py`
+    ```bash
+    python3 extract.py
+    ```
 ---
 
 
@@ -167,6 +171,8 @@ SELECT
 
 
 ## SQL Questions
+
+The SQL queries for this part are shown here, but they are also committed to the repository as files.
 
 ### Question 1:
 Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
