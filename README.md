@@ -13,7 +13,7 @@
 
  This GitHub page provides a project that involves working with the NYTimes Books API to retrieve data on book lists and books. The project includes two main tasks:
  1.  Using the API endpoint /lists/names.json to find the 5 newest monthly lists and output list_name_encoded and oldest_published_date for all 5 lists in a single JSON file.  
-	1.1 This task is automated using GitHub Actions. The YAML file can be found in the 'Actions' tab or by clicking [here](https://github.com/natitaw/nytimes-books/blob/main/.github/workflows/nightly-update.yml)
+	**1.1 This task is automated using GitHub Actions. The YAML file can be found in the 'Actions' tab or by clicking [here](https://github.com/natitaw/nytimes-books/blob/main/.github/workflows/nightly-update.yml)**
 		- Note: The workflow is currently manually disabled 
  2.  Writing a script that accepts the path to the JSON file from the first task, as well as an optional end date, and retrieves the books in each list for the specified date range. The output is a single NDJson file per list containing the entire API response for all months in that list.
     
@@ -171,7 +171,7 @@ SELECT
 
 The SQL queries for this part are shown here, but they are also committed to the repository as files.
 
-### Question 1:
+### SQL Question 1:
 Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
 
 ```SQL
@@ -184,7 +184,7 @@ GROUP BY BOOK_PUBLISHER
 ORDER BY TOTAL_APPERANCES DESC
 ```
 
-### Question 2:
+### SQL Question 2:
 
 2.1: Write a query that counts how many points each publisher has in our dataset, where points are defined as such: position 1 = 15 points, position 2 = 14 points, position 3 = 13 points, etc. 
 ```SQL
@@ -211,7 +211,7 @@ ORDER BY POINTS DESC;
 
 > Note: I chose to use `ARRAY_CONSTRUCT()` for question 2.1 and 2.2 despite it being slightly more complicated  because it is easier to maintain.
 
-### Question 3:
+### SQL Question 3:
 Find which books had the longest uprising trends and how long (in months) they were, where an uprising trend is defined as when a book has a greater or equal position in month X than in month X - 1
 
 ```SQL
