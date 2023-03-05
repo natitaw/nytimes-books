@@ -128,27 +128,11 @@ PURGE = TRUE;
 
 ## Part 3: Transform
 
+Now that the data is loaded onto Snowflake. We can do the next tasks.
 
-```SQL
-WITH book_table AS (
-SELECT PARSE_JSON(PARSE_JSON(SRC_JSON):results) AS src FROM RAW_BOOKS)
+### 1. Create a VIEW called `V_LISTS`
 
--- # list_name (string), list_name_encoded (string), bestsellers_date (date), books (variant).
-
-SELECT 
-src:list_name AS LIST_NAME,
-src:list_name_encoded AS LIST_NAME_ENCODED,
-src:bestsellers_date AS BESTSELLERS_DATE,
-src:books AS BOOKS 
-
-FROM book_table 
-limit 10
-
-```
-
-### Creating a VIEW named `V_LISTS`
-
-- Appropriate data types
+This view is created using the following command:
 ```SQL
 CREATE OR REPLACE VIEW V_LISTS (LIST_NAME, LIST_NAME_ENCODED, BESTSELLERS_DATE, BOOKS) AS (
 WITH book_table AS (
@@ -164,7 +148,9 @@ FROM book_table
 )
 ```
 
-Creating V_LIST_BOOKS
+### 2. Create a VIEW called `V_LISTS_BOOKS`
+
+This view is created using the following command:
 ```SQL
 CREATE OR REPLACE VIEW V_LISTS_BOOKS (BOOK_TITLE, BOOK_RANK, BOOK_PUBLISHER, LIST_NAME, BESTSELLERS_DATE) AS (
 SELECT 
@@ -183,13 +169,9 @@ SELECT
 ## SQL Questions
 
 ### Question 1:
-
 Write a query to find how many unique books and how many total appearances each publisher appears on our dataset, ordered by total appearances.
 
 ```SQL
--- Write a query to find how many unique books and how many total 
--- appearences each publisher appears on the dataset
--- ordered by total appearences
 SELECT
 	BOOK_PUBLISHER, 
     COUNT(DISTINCT (BOOK_TITLE)) AS UNIQUE_BOOKS,
