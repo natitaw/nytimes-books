@@ -20,11 +20,12 @@
  This project can be useful for anyone who wants to work with the NYTimes Books API to retrieve data on books and book-related content from The New York Times. The code and documentation on the GitHub page can serve as a helpful starting point for anyone looking to build similar projects or integrate the NYTimes Books API into their own applications.
 
 
-## Getting Started
+## Part 1: Extract
 
 Here is how you can install and run the file
 
 1. Get a free API Key at the [NYTimes Dev Portal](https://developer.nytimes.com/get-started)
+    - *Note: since this is a private repo, I have already done this step so you can skip it*
 2. Clone the repo
    ```sh
    git clone https://github.com/natitaw/nytimes-books.git
@@ -34,20 +35,15 @@ Here is how you can install and run the file
    pip install -r requirements.txt
    ```
 4. Enter your API in `config.py`
+    -	*Note: since this is a private repo, I have already done step (4) so you can skip it*
    ```python
    API_KEY = 'ENTER_YOUR_API'
    ```
--	*Note: since this is a private repo, I have already done step (4) so you can skip it*
 5. Execute `extract.py`
     ```bash
     python3 extract.py
     ```
 ---
-
-
-
-
- ## Part 1: Extract
 
  ## Part 2: Load
 This part is about the load part of the assignment. 
@@ -133,6 +129,7 @@ PURGE = TRUE;
 ## Part 3: Transform
 
 Now that the data is loaded onto Snowflake. We can do the next tasks.
+- **Note: I have saved all the SQL commands in the folder [Queries](https://github.com/natitaw/nytimes-books/tree/main/Queries), but I have also presented them here for simplicity.**
 
 ### 1. Create a VIEW called `V_LISTS`
 
