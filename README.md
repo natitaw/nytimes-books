@@ -33,7 +33,6 @@ Here is how you can install and run the file
    pip install -r requirements.txt
    ```
 4. Enter your API in `config.py`
-    -	*Note: since this is a private repo, I have already done step (4) so you can skip it*
    ```python
    API_KEY = 'ENTER_YOUR_API'
    ```
