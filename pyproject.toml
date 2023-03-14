@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "nytimes-books"
+version = "0.1.0"
+description = "List of packages"
+authors = ["Nate Shenkute <33416101+natitaw@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "nytimes_books"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
